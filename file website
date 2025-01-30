@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventori Barang</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .input-section {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #daftar-barang {
+            margin-top: 20px;
+        }
+        .item {
+            background: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="input-section">
+        <h1>Inventori Barang</h1>
+        <input type="text" id="namaBarang" placeholder="Nama Barang">
+        <input type="number" id="jumlahBarang" placeholder="Jumlah">
+        <button onclick="tambahBarang()">Tambah</button>
+    </div>
+    <div id="daftar-barang"></div>
+
+    <script>
+        // Load data dari localStorage saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', loadBarang);
+
+        function tambahBarang() {
+            const nama = document.getElementById('namaBarang').value;
+            const jumlah = document.getElementById('jumlahBarang').value;
+
+            if (nama && jumlah) {
+                const barang = {
+                    id: Date.now(),
+                    nama: nama,
+                    jumlah: jumlah
+                };
+
+                // Simpan ke localStorage
+                const daftarBarang = JSON.parse(localStorage.getItem('inventori')) || [];
+                daftarBarang.push(barang);
+                localStorage.setItem('inventori', JSON.stringify(daftarBarang));
+
+                // Reset input
+                document.getElementById('namaBarang').value = '';
+                document.getElementById('jumlahBarang').value = '';
+
+                // Update tampilan
+                loadBarang();
+            }
+        }
+
+        function loadBarang() {
+            const daftarBarang = JSON.parse(localStorage.getItem('inventori')) || [];
+            const container = document.getElementById('daftar-barang');
+            container.innerHTML = '';
+
+            daftarBarang.forEach((barang) => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <span>${barang.nama} (${barang.jumlah})</span>
+                    <button onclick="hapusBarang(${barang.id})">Hapus</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function hapusBarang(id) {
+            let daftarBarang = JSON.parse(localStorage.getItem('inventori')) || [];
+            daftarBarang = daftarBarang.filter(barang => barang.id !== id);
+            localStorage.setItem('inventori', JSON.stringify(daftarBarang));
+            loadBarang();
+        }
+    </script>
+</body>
+</html>
